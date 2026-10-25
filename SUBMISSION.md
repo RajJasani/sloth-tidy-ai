@@ -11,6 +11,37 @@ Rather than being an intrusive, hyperactive assistant, SlothTidy embraces the pe
 2. **Overnight Morning Digest**: Reads raw daily thoughts, terminal logs, and git commits to synthesize a calm executive morning brief with clear action items and inspiring "Sloth Wisdom".
 3. **100% Zero-Cloud Privacy**: Runs entirely on open-weight models (via Ollama or local deterministic semantic parser). Zero bytes or tokens ever leave the local machine.
 
+```mermaid
+flowchart TD
+    subgraph Input ["📥 Raw Workspace Inputs"]
+        A1["Messy Downloads & Inbox"]
+        A2["Daily Notes & Markdown Logs"]
+        A3["Git Commits & Standup Snippets"]
+    end
+
+    subgraph Core ["🦥 SlothTidy Core Engine"]
+        B1["Local AI Engine\n(Ollama Gemma 2 / Llama 3.2)"]
+        B2["Resilient Heuristic Fallback\n(Deterministic Semantic Parser)"]
+        B3["SlothStorage\n(SQLite Audit & Rollback)"]
+    end
+
+    subgraph Actions ["⚡ Autonomous Tasks"]
+        C1["Semantic Classifier & Folder Sorter\n(Receipts, Code, Notes, Projects)"]
+        C2["Daily Executive Digest Generator\n(Action Items + Calm Briefing)"]
+    end
+
+    subgraph Interfaces ["🖥️ Presentation Layer"]
+        D1["Modern Glassmorphic Web Dashboard\n(http://localhost:8765)"]
+        D2["Rich Terminal CLI Tool\n(python3 -m sloth_ai)"]
+    end
+
+    Input --> Core
+    B1 <--> B2
+    Core --> Actions
+    Actions --> B3
+    Actions --> Interfaces
+```
+
 ---
 
 ## Demo
@@ -18,6 +49,39 @@ Rather than being an intrusive, hyperactive assistant, SlothTidy embraces the pe
 * **Web UI Dashboard**: Includes an interactive dark-mode glassmorphic interface to test one-click workspace tidying, dry-run audits, and real-time morning digest synthesis.
 * **Terminal CLI**: Features a clean command-line interface (`sloth status`, `sloth tidy`, `sloth digest`, `sloth serve`).
 * **Instant Verification**: Comes with a self-contained zero-dependency web server and comprehensive unit test suite (100% passing).
+
+### Terminal Output Demo
+```text
+$ python3 -m sloth_ai.cli tidy --folder examples/inbox --dry-run
+🔍 Scanning files in: examples/inbox...
+
+[DRY RUN] Successfully processed 3 files:
+  • meeting_agenda_q4.md  -->  [work_projects]
+    Summary: Classified 'meeting_agenda_q4.md' as work projects based on local semantic markers.
+
+  • invoice_october.txt  -->  [finance_receipts]
+    Summary: Classified 'invoice_october.txt' as finance receipts based on local semantic markers.
+
+  • db_helper.py  -->  [developer_code]
+    Summary: Classified 'db_helper.py' as developer code based on local semantic markers.
+
+$ python3 -m sloth_ai.cli digest --file examples/notes/oct_25_thoughts.md
+=======================================================
+🌅  Digest - oct_25_thoughts.md
+=======================================================
+Overview:
+Synthesized 6 log lines into 5 primary action items. All items tracked locally without external cloud telemetry.
+
+Action Items:
+  [ ] TODO: Submit Hacktoberfest Open-Source AI Challenge Week 3 ("Slow and Steady")
+  [ ] Review open pull requests on the repository
+  [ ] Fix edge-case in JSON streaming response parser
+  [ ] Prepare presentation deck for next week
+  [ ] Walk the dog in the evening
+
+Sloth Wisdom: "Slow and steady wins the race. Take a breath and let the machine do the heavy lifting."
+=======================================================
+```
 
 ---
 
