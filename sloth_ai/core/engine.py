@@ -140,16 +140,17 @@ class LocalAIEngine:
 
     def _heuristic_classify(self, filename: str, content: str) -> Dict[str, Any]:
         text = f"{filename} {content}".lower()
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
         
         if any(w in text for w in ["invoice", "receipt", "billing", "tax", "payment", "$", "usd", "eur", "total:"]):
             category = "finance_receipts"
             confidence = 0.92
-        elif any(w in text for w in ["def ", "class ", "import ", "function", "const ", "var ", "git", "api", "json", "python", "javascript"]):
+        elif any(w in text for w in ["meeting", "agenda", "sprint", "roadmap", "q1", "q2", "q3", "q4", "client", "deliverable", "milestone"]) and ext not in ["py", "js", "ts", "rs", "go", "cpp", "c", "java"]:
+            category = "work_projects"
+            confidence = 0.90
+        elif ext in ["py", "js", "ts", "rs", "go", "cpp", "c", "java", "sh", "sql", "html", "css"] or any(w in text for w in ["def ", "class ", "import ", "function", "const ", "var ", "git ", "python", "javascript"]):
             category = "developer_code"
             confidence = 0.95
-        elif any(w in text for w in ["meeting", "agenda", "sprint", "roadmap", "q3", "q4", "client", "deliverable", "milestone"]):
-            category = "work_projects"
-            confidence = 0.88
         elif any(w in text for w in ["learn", "tutorial", "notes", "chapter", "study", "lecture", "book"]):
             category = "learning_notes"
             confidence = 0.85
@@ -174,9 +175,9 @@ class LocalAIEngine:
         topics = set()
         
         for line in lines:
-            line_clean = line.lstrip("-*1234567890. []").strip()
-            lower = line.lower()
-            if any(lower.startswith(w) for w in ["todo", "fix", "implement", "review", "email", "call", "deploy", "submit", "prepare", "check"]):
+            line_clean = line.lstrip("-*#1234567890. []").strip()
+            lower = line_clean.lower()
+            if any(lower.startswith(w) for w in ["todo", "fix", "implement", "review", "email", "call", "deploy", "submit", "prepare", "check", "walk"]):
                 action_items.append(line_clean)
             elif "!" in line or "urgent" in lower or "action:" in lower:
                 action_items.append(line_clean)
@@ -184,7 +185,7 @@ class LocalAIEngine:
             # Simple keyword extraction for topics
             words = re.findall(r"\b[A-Za-z]{4,}\b", line)
             for w in words:
-                if w.lower() in ["hacktoberfest", "release", "frontend", "backend", "database", "security", "design", "presentation", "mentor", "agent", "ollama"]:
+                if w.lower() in ["hacktoberfest", "release", "frontend", "backend", "database", "security", "design", "presentation", "mentor", "agent", "ollama", "planning"]:
                     topics.add(w.capitalize())
 
         if not action_items and lines:
