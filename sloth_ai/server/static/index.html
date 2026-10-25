@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlothTidy AI - Ambient Workspace Optimizer</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card-bg: rgba(22, 30, 46, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --accent: #6366f1;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo h1 { font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, #10b981, #6ee7b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .badge-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--primary); color: #34d399; }
+    .status-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; backdrop-filter: blur(8px); }
+    .stat-card h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .stat-card p { font-size: 1.4rem; font-weight: 700; color: #fff; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
+    .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(8px); display: flex; flex-direction: column; gap: 1rem; }
+    .panel h2 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+    textarea, input[type="text"] { width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff; border-radius: 8px; padding: 0.75rem; font-size: 0.9rem; outline: none; }
+    textarea:focus, input[type="text"]:focus { border-color: var(--primary); }
+    button { background: var(--primary); color: #064e3b; border: none; padding: 0.75rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    button:hover { background: #34d399; box-shadow: 0 0 15px var(--primary-glow); }
+    button.secondary { background: rgba(255, 255, 255, 0.08); color: #e2e8f0; }
+    button.secondary:hover { background: rgba(255, 255, 255, 0.15); }
+    .btn-row { display: flex; gap: 0.75rem; }
+    .result-box { background: rgba(10, 14, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1rem; margin-top: 0.5rem; font-size: 0.88rem; max-height: 280px; overflow-y: auto; }
+    .task-item { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.4rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    .tag { display: inline-block; padding: 0.2rem 0.5rem; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 4px; font-size: 0.75rem; color: #a5b4fc; margin-right: 0.3rem; }
+    .quote-box { font-style: italic; color: #cbd5e1; border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <span style="font-size: 2rem;">🦥</span>
+        <div>
+          <h1>SlothTidy AI</h1>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">Hacktoberfest Open-Source AI Challenge: Week 3 ("Slow and Steady")</div>
+        </div>
+      </div>
+      <div>
+        <span class="badge-pill" id="healthPill">🟢 Checking Engine...</span>
+      </div>
+    </header>
+
+    <div class="status-bar">
+      <div class="stat-card">
+        <h3>Local Inference Engine</h3>
+        <p id="modelDisplay">Detecting...</p>
+      </div>
+      <div class="stat-card">
+        <h3>Organized Files</h3>
+        <p id="organizedCount">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Morning Briefings</h3>
+        <p id="digestsCount">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Privacy Guarantee</h3>
+        <p style="font-size: 1.1rem; color: #34d399;">100% Local Inference</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- File Tidier Panel -->
+      <div class="panel">
+        <h2>📁 Ambient Workspace Sorter</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Scan unorganized downloads and messy directories. Open-weight AI semantically categorizes files without uploading your private files anywhere.
+        </p>
+        <input type="text" id="targetFolder" placeholder="Leave empty for default inbox folder...">
+        <div class="btn-row">
+          <button onclick="runTidy(false)">⚡ Tidy Files Now</button>
+          <button class="secondary" onclick="runTidy(true)">🔍 Dry Run Audit</button>
+        </div>
+        <div id="tidyResults" class="result-box">
+          <div style="color: var(--text-muted);">No tidy operation run yet. Click "Tidy Files Now" to organize messy items.</div>
+        </div>
+      </div>
+
+      <!-- Overnight Digest Panel -->
+      <div class="panel">
+        <h2>🌅 Slow & Steady Morning Digest</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Synthesize daily thoughts, raw commit messages, and scattered logs into a clear, stress-free morning executive brief.
+        </p>
+        <textarea id="digestInput" rows="5" placeholder="Paste messy daily notes, git logs, or todo lists here..."></textarea>
+        <div class="btn-row">
+          <button onclick="generateDigest()">☕ Generate Digest</button>
+          <button class="secondary" onclick="insertSampleNotes()">📝 Insert Sample Notes</button>
+        </div>
+        <div id="digestResults" class="result-box">
+          <div style="color: var(--text-muted);">Your morning briefing will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        document.getElementById('healthPill').innerText = data.ollama_connected 
+          ? `🟢 Ollama Connected (${data.model})` 
+          : `🟡 Fallback Local Heuristic`;
+        document.getElementById('modelDisplay').innerText = data.ollama_connected ? data.model : "Local Rule Engine";
+        document.getElementById('organizedCount').innerText = data.total_organized_files || 0;
+        document.getElementById('digestsCount').innerText = data.total_digests_generated || 0;
+      } catch (err) {
+        document.getElementById('healthPill').innerText = '🔴 Server Offline';
+      }
+    }
+
+    async function runTidy(dryRun = false) {
+      const folder = document.getElementById('targetFolder').value.trim();
+      const resultsBox = document.getElementById('tidyResults');
+      resultsBox.innerHTML = '<div style="color: var(--text-muted);">Processing files with local AI...</div>';
+      
+      try {
+        const res = await fetch('/api/tidy', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ folder: folder || null, dry_run: dryRun })
+        });
+        const data = await res.json();
+        if (!data.organized || data.organized.length === 0) {
+          resultsBox.innerHTML = '<div style="color: #94a3b8;">No unorganized files found in folder! Everything is tidy.</div>';
+          return;
+        }
+
+        let html = `<strong>${dryRun ? '[DRY RUN] ' : ''}Processed ${data.organized.length} files:</strong><ul style="list-style: none; margin-top: 0.5rem;">`;
+        data.organized.forEach(item => {
+          html += `<li style="padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div><strong>${item.source.split('/').pop()}</strong> &rarr; <span class="tag">${item.category}</span></div>
+            <div style="font-size: 0.8rem; color: #94a3b8;">${item.summary}</div>
+          </li>`;
+        });
+        html += '</ul>';
+        resultsBox.innerHTML = html;
+        fetchStatus();
+      } catch (err) {
+        resultsBox.innerHTML = `<div style="color: #ef4444;">Error organizing: ${err.message}</div>`;
+      }
+    }
+
+    function insertSampleNotes() {
+      document.getElementById('digestInput').value = 
+`- TODO: Complete Hacktoberfest 2026 Open-Source AI Challenge Week 3 submission
+- Review PR #42 for database connection pooling fix
+- Client meeting: prepare slide deck for quarterly engineering roadmap
+- Fix memory leak in background worker service
+- Note: Need to buy groceries and walk the dog`;
+    }
+
+    async function generateDigest() {
+      const text = document.getElementById('digestInput').value.trim();
+      const resultsBox = document.getElementById('digestResults');
+      if (!text) {
+        resultsBox.innerHTML = '<div style="color: #f59e0b;">Please enter some notes or click "Insert Sample Notes"!</div>';
+        return;
+      }
+      resultsBox.innerHTML = '<div style="color: var(--text-muted);">Synthesizing peaceful briefing...</div>';
+      
+      try {
+        const res = await fetch('/api/digest', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        let itemsHtml = (data.action_items || []).map(it => `<div class="task-item"><span>✅</span> <div>${it}</div></div>`).join('');
+        let tagsHtml = (data.topics || []).map(t => `<span class="tag">#${t}</span>`).join('');
+        
+        resultsBox.innerHTML = `
+          <div style="font-weight: 700; margin-bottom: 0.4rem; color: #10b981;">${data.title || 'Morning Digest'}</div>
+          <p style="color: #e2e8f0; margin-bottom: 0.75rem;">${data.summary}</p>
+          <div style="margin-bottom: 0.5rem;">${tagsHtml}</div>
+          <div style="margin-top: 0.5rem; font-weight: 600;">Key Action Items:</div>
+          <div style="margin-top: 0.25rem;">${itemsHtml || '<div style="color:#94a3b8;">No urgent action items. Take it easy!</div>'}</div>
+          <div class="quote-box">"${data.sloth_wisdom}"</div>
+        `;
+        fetchStatus();
+      } catch (err) {
+        resultsBox.innerHTML = `<div style="color: #ef4444;">Error generating digest: ${err.message}</div>`;
+      }
+    }
+
+    fetchStatus();
+  </script>
+</body>
+</html>
